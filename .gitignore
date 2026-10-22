@@ -1,0 +1,17 @@
+﻿.env
+.env.*
+!.env.example
+
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+cricket_backup*.db
+*.db-journal
+*.sqlite-wal
+*.sqlite-shm
+
+.DS_Store
+Thumbs.db

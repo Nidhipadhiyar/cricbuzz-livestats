@@ -8,10 +8,26 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 
-cricket_backup*.db
+# Local database files and backups
+*.db
+*.sqlite
+*.sqlite3
 *.db-journal
 *.sqlite-wal
 *.sqlite-shm
+
+# Temporary inspection and verification scripts
+check_*.py
+compare_*.py
+inspect_*.py
+import_one_scorecard.py
+test_*.py
+verify_*.py
+
+# Local maintenance scripts
+database/cleanup_sample_players.py
+database/recover_match_metadata.py
+database/seed_data.py
 
 .DS_Store
 Thumbs.db

@@ -66,9 +66,21 @@ def initialize_database():
             "SELECT COUNT(*) FROM matches"
         ).fetchone()[0]
 
+        print(f"DEBUG: Database path: {DB_PATH}")
+        print(f"DEBUG: Matches before sample import: {match_count}")
+        print(f"DEBUG: Sample SQL exists: {SAMPLE_DATA_PATH.exists()}")
+
         if match_count == 0 and SAMPLE_DATA_PATH.exists():
-            sample_sql = SAMPLE_DATA_PATH.read_text(encoding="utf-8")
-            connection.executescript(sample_sql)
+            try:
+                sample_sql = SAMPLE_DATA_PATH.read_text(encoding="utf-8")
+                connection.executescript(sample_sql)
+                imported_count = connection.execute(
+                    "SELECT COUNT(*) FROM matches"
+                ).fetchone()[0]
+                print(f"DEBUG: Matches after sample import: {imported_count}")
+            except Exception as error:
+                print(f"DEBUG: Sample import failed: {type(error).__name__}: {error}")
+                raise
 
 
 if __name__ == "__main__":

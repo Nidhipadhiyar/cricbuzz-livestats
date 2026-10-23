@@ -5,10 +5,10 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 DB_PATH = BASE_DIR / "cricket.db"
 SCHEMA_PATH = BASE_DIR / "database" / "schema.sql"
+SAMPLE_DATA_PATH = BASE_DIR / "sample_data.sql"
 
 
 def get_connection():
-    """Create a connection to the SQLite database."""
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     connection.execute("PRAGMA foreign_keys = ON")
@@ -16,7 +16,6 @@ def get_connection():
 
 
 def _add_missing_columns(connection, table_name, columns):
-    """Add columns that are missing from an existing table."""
     existing_columns = {
         row["name"]
         for row in connection.execute(
@@ -33,7 +32,6 @@ def _add_missing_columns(connection, table_name, columns):
 
 
 def initialize_database():
-    """Create tables and safely migrate an existing database."""
     schema = SCHEMA_PATH.read_text(encoding="utf-8")
 
     with get_connection() as connection:
@@ -42,9 +40,7 @@ def initialize_database():
         _add_missing_columns(
             connection,
             "players",
-            {
-                "external_player_id": "TEXT",
-            },
+            {"external_player_id": "TEXT"},
         )
 
         _add_missing_columns(
@@ -65,6 +61,14 @@ def initialize_database():
             ON players(external_player_id)
             """
         )
+
+        match_count = connection.execute(
+            "SELECT COUNT(*) FROM matches"
+        ).fetchone()[0]
+
+        if match_count == 0 and SAMPLE_DATA_PATH.exists():
+            sample_sql = SAMPLE_DATA_PATH.read_text(encoding="utf-8")
+            connection.executescript(sample_sql)
 
 
 if __name__ == "__main__":
